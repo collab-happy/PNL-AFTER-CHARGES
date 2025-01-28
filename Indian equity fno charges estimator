@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Trading Charges Calculator</title>
+    <style>
+        body {
+            background-color: powderblue;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #2e8b57;
+            color: white;
+        }
+
+        section {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            border-spacing: 10px;
+        }
+
+        td {
+            padding: 5px;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            background-color: #2e8b57;
+            color: white;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Indian Trading Charges Calculator</h1>
+        <p>Calculate Brokerage and Other Charges for Your Trades</p>
+    </header>
+
+    <section>
+        <h2 style="text-align: center;">Enter Transaction Details</h2>
+        <form id="tradingForm">
+            <table>
+                <tr>
+                    <td><label for="contractType">Select Contract Type:</label></td>
+                    <td>
+                        <select id="contractType" name="contractType">
+                            <option value="stocks">Stock</option>
+                            <option value="futures">Futures</option>
+                            <option value="options">Options</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="quantity">Quantity:</label></td>
+                    <td><input type="number" id="quantity" name="quantity" required min="1"></td>
+                </tr>
+                <tr>
+                    <td><label for="buyPrice">Buy Price (₹):</label></td>
+                    <td><input type="number" id="buyPrice" name="buyPrice" required step="0.01"></td>
+                </tr>
+                <tr>
+                    <td><label for="sellPrice">Sell Price (₹):</label></td>
+                    <td><input type="number" id="sellPrice" name="sellPrice" required step="0.01"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center;">
+                        <button type="button" onclick="calculateCharges()">Calculate Charges</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </section>
+
+    <section>
+        <h2 style="text-align: center;">Charges Summary</h2>
+        <table>
+            <tr>
+                <td><strong>Total Transaction Value:</strong></td>
+                <td>₹<span id="transactionValueResult">0</span></td>
+            </tr>
+            <tr>
+                <td><strong>Brokerage:</strong></td>
+                <td>₹<span id="brokerageResult">0</span></td>
+            </tr>
+            <tr>
+                <td><strong>GST on Brokerage:</strong></td>
+                <td>₹<span id="gstResult">0</span></td>
+            </tr>
+            <tr>
+                <td><strong>STT:</strong></td>
+                <td>₹<span id="sttResult">0</span></td>
+            </tr>
+            <tr>
+                <td><strong>Transaction Charges:</strong></td>
+                <td>₹<span id="transactionChargesResult">0</span></td>
+            </tr>
+            <tr>
+                <td><strong>Total Charges:</strong></td>
+                <td>₹<span id="totalChargesResult">0</span></td>
+            </tr>
+        </table>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Trading Charges Calculator</p>
+    </footer>
+
+    <script>
+        function calculateCharges() {
+            const contractType = document.getElementById("contractType").value;
+            const quantity = parseFloat(document.getElementById("quantity").value);
+            const buyPrice = parseFloat(document.getElementById("buyPrice").value);
+            const sellPrice = parseFloat(document.getElementById("sellPrice").value);
+
+            // is section mein changes karna hai jab bhi gov charges change karegi
+            const brokerageCap = 20;                 // Max ₹20 dono side ka hai ye cap hai basically
+            const brokerageRateStocks = 0.05;        // Stocks: 0.05%
+            const brokerageRateFutures = 0.01;       // Futures: 0.01%
+            const brokerageRateOptions = 0.05;       // Options: 0.05% of premium
+            const gstRate = 18;                      // Nirmala tai ka hai ye to deva 
+            const sttRateStocks = 0.1;            // STT rate for stocks (sell side)
+            const sttRateFutures = 0.01;          // STT for futures (sell side)
+            const sttRateOptions = 0.05;            // STT for options (premium, sell side)
+            const transactionChargesRate = 0.01;    // Transaction charges rate
+
+            let buyTransactionValue, sellTransactionValue, brokerage, stt;
+
+            if (contractType === "stocks") {
+                buyTransactionValue = quantity * buyPrice;
+                sellTransactionValue = quantity * sellPrice;
+
+                // Calculate brokerage for buy and sell dono side cap ke sath karega ye
+                const buyBrokerage = Math.min((buyTransactionValue * brokerageRateStocks) / 100, brokerageCap);
+                const sellBrokerage = Math.min((sellTransactionValue * brokerageRateStocks) / 100, brokerageCap);
+                brokerage = buyBrokerage + sellBrokerage; // Total brokerage
+
+                // STT only on sell side 
+                stt = (sellTransactionValue * sttRateStocks) / 100;
+            } else if (contractType === "futures") {
+                buyTransactionValue = quantity * buyPrice;
+                sellTransactionValue = quantity * sellPrice;
+
+                // Calculate brokerage for buy and sell sides cap ke sath
+                const buyBrokerage = Math.min((buyTransactionValue * brokerageRateFutures) / 100, brokerageCap);
+                const sellBrokerage = Math.min((sellTransactionValue * brokerageRateFutures) / 100, brokerageCap);
+                brokerage = buyBrokerage + sellBrokerage; // Total brokerage
+
+                // STT only on sell side onlyyyyyyyyyyyyyy
+                stt = (sellTransactionValue * sttRateFutures) / 100;
+            } else if (contractType === "options") {
+                const premium = quantity * buyPrice; // Premium value based on buy price
+                buyTransactionValue = premium; // Options only consider premium value
+                sellTransactionValue = quantity * sellPrice;
+
+                // Calculate brokerage for buy and sell sides with cappppppppppppp
+                const buyBrokerage = Math.min((premium * brokerageRateOptions) / 100, brokerageCap);
+                const sellBrokerage = Math.min((sellTransactionValue * brokerageRateOptions) / 100, brokerageCap);
+                brokerage = buyBrokerage + sellBrokerage; // Total brokerage
+
+                // STT on premium value (sell side bas mein)
+                stt = (premium * sttRateOptions) / 100;
+            }
+
+            // Transaction charges on total turnover (buy + sell) dono side mila ke
+            const transactionCharges = ((buyTransactionValue + sellTransactionValue) * transactionChargesRate) / 100;
+
+            // GST on brokerage onlyyyy
+            const gst = (brokerage * gstRate) / 100;
+
+            // Total charges
+            const totalCharges = brokerage + gst + stt + transactionCharges;
+
+            // Update results in the DOM
+            document.getElementById("transactionValueResult").textContent = (buyTransactionValue + sellTransactionValue).toFixed(2);
+            document.getElementById("brokerageResult").textContent = brokerage.toFixed(2);
+            document.getElementById("gstResult").textContent = gst.toFixed(2);
+            document.getElementById("sttResult").textContent = stt.toFixed(2);
+            document.getElementById("transactionChargesResult").textContent = transactionCharges.toFixed(2);
+            document.getElementById("totalChargesResult").textContent = totalCharges.toFixed(2);
+        }
+    </script>
+
+</body>
+
+</html>
