@@ -1,0 +1,64 @@
+
+        function calculateCharges(){
+
+            const contractType = document.getElementById("contractType").value;
+            const quantity = parseFloat(document.getElementById("quantity").value);
+            const buyPrice = parseFloat(document.getElementById("buyPrice").value);
+            const sellPrice = parseFloat(document.getElementById("sellPrice").value);
+
+            
+            const brokerageCap = 20;               
+            const brokerageRateStocks = 0.05;        
+            const brokerageRateFutures = 0.01;       
+            const brokerageRateOptions = 0.05;       
+            const gstRate = 18;                      
+            const sttRateStocks = 0.1;            
+            const sttRateFutures = 0.01;          
+            const sttRateOptions = 0.05;           
+            const transactionChargesRate = 0.01;    
+
+
+           let buyTransactionValue, sellTransactionValue, brokerage, stt;
+          
+           if
+            (contractType === "stocks") {
+                buyTransactionValue = quantity * buyPrice;
+                sellTransactionValue = quantity * sellPrice;
+
+                const buyBrokerage = Math.min((buyTransactionValue * brokerageRateStocks) / 100, brokerageCap);
+                const sellBrokerage = Math.min((sellTransactionValue * brokerageRateStocks) / 100, brokerageCap);
+                brokerage = buyBrokerage + sellBrokerage; 
+                stt = (sellTransactionValue * sttRateStocks) / 100;
+            } 
+            
+            else if
+             (contractType === "futures") {
+                buyTransactionValue = quantity * buyPrice;
+                sellTransactionValue = quantity * sellPrice;
+                const buyBrokerage = Math.min((buyTransactionValue * brokerageRateFutures) / 100, brokerageCap);
+                const sellBrokerage = Math.min((sellTransactionValue * brokerageRateFutures) / 100, brokerageCap);
+                brokerage = buyBrokerage + sellBrokerage; 
+                stt = (sellTransactionValue * sttRateFutures) / 100;
+            } 
+            else if
+             (contractType === "options") {
+                const premium = quantity * buyPrice; 
+                buyTransactionValue = premium; 
+                sellTransactionValue = quantity * sellPrice;
+                const buyBrokerage = Math.min((premium * brokerageRateOptions) / 100, brokerageCap);
+                const sellBrokerage = Math.min((sellTransactionValue * brokerageRateOptions) / 100, brokerageCap);
+                brokerage = buyBrokerage + sellBrokerage; 
+                stt = (premium * sttRateOptions) / 100;
+            }
+
+            const transactionCharges = ((buyTransactionValue + sellTransactionValue) * transactionChargesRate) / 100;
+            const gst = (brokerage * gstRate) / 100;
+            const totalCharges = brokerage + gst + stt + transactionCharges;
+
+            document.getElementById("transactionValueResult").textContent = (buyTransactionValue + sellTransactionValue).toFixed(2);
+            document.getElementById("brokerageResult").textContent = brokerage.toFixed(2);
+            document.getElementById("gstResult").textContent = gst.toFixed(2);
+            document.getElementById("sttResult").textContent = stt.toFixed(2);
+            document.getElementById("transactionChargesResult").textContent = transactionCharges.toFixed(2);
+            document.getElementById("totalChargesResult").textContent = totalCharges.toFixed(2);
+        }
