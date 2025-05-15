@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dalal Street charges</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+
+</head>
+<body>
+
+    <header >
+        <h1>Dalal Street Charges Estimator</h1>
+          <p>Calculate Brokerage and Other Charges for Your Trades</p>
+    </header>
+
+   <section>
+        <h2 style="text-align: center;">Enter Transaction Details</h2>
+        <form id="tradingForm">
+            <table>
+                <tr>
+                    <td><label for="contractType">Select Contract Type:</label></td>
+                    <td>
+                        <select id="contractType" name="contractType">
+                            <option value="stocks">Stock</option>
+                            <option value="futures">Futures</option>
+                            <option value="options">Options</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="quantity">Quantity:</label></td>
+                    <td><input type="number" id="quantity" name="quantity" required min="1"></td>
+                </tr>
+                <tr>
+                    <td><label for="buyPrice">Buy Price (₹):</label></td>
+                    <td><input type="number" id="buyPrice" name="buyPrice" required step="0.01"></td>
+                </tr>
+                <tr>
+                    <td><label for="sellPrice">Sell Price (₹):</label></td>
+                    <td><input type="number" id="sellPrice" name="sellPrice" required step="0.01"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center;">
+                        <button type="button" onclick="calculateCharges()">Calculate Charges</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </section>
+
+    <section>
+        <h2 style="text-align: center;">Charges Summary</h2>
+        <table>
+            <tr>
+                <td><strong>Total Transaction Value:</strong></td>
+                <td>₹<span id="transactionValueResult">0</span></td>
+            </tr>
+            <tr>
+                <td><strong>Brokerage:</strong></td>
+                <td>₹<span id="brokerageResult">0</span></td>
+            </tr>
+            <tr>
+                <td><strong>GST on Brokerage:</strong></td>
+                <td>₹<span id="gstResult">0</span></td>
+            </tr>
+            <tr>
+                <td><strong>STT:</strong></td>
+                <td>₹<span id="sttResult">0</span></td>
+            </tr>
+            <tr>
+                <td><strong>Transaction Charges:</strong></td>
+                <td>₹<span id="transactionChargesResult">0</span></td>
+            </tr>
+            <tr>
+                <td><strong>Total Charges:</strong></td>
+                <td>₹<span id="totalChargesResult">0</span></td>
+            </tr>
+        </table>
+    </section>
+
+    <footer>
+        <p>&#169;2025 trading charges calulator</p>
+        <p>made with ❤️in INDIA</p>
+    </footer>
+</body>
+</html>
